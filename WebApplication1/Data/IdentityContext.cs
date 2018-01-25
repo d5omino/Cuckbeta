@@ -8,9 +8,9 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class IdentityContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public IdentityContext(DbContextOptions<IdentityContext> options)
             : base(options)
         {
         }

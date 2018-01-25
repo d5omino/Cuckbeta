@@ -30,33 +30,40 @@ namespace WebApplication1
         {
 
             DevDbString = Configuration["DevDb"];
-            ProdDbString = Configuration[Environment.GetEnvironmentVariable("ProdDbString")];
-            EnvironmentIn = Configuration[Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")];
+            ProdDbString = Environment.GetEnvironmentVariable("ProdDbString");
+            EnvironmentIn = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
 
-            if(EnvironmentIn.Equals("Development"))
+
+            switch(EnvironmentIn)
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(Configuration[DevDbString]));
+                case "Development":
+                    services.AddDbContext<IdentityContext>(options =>
+                        options.UseSqlServer(DevDbString));
+                    services.AddDbContext<ThingContext>(options =>
+                        options.UseSqlServer(DevDbString));
+                    break;
+                case "Production":
+                    services.AddDbContext<IdentityContext>(options =>
+                        options.UseSqlServer(ProdDbString));
+                    services.AddDbContext<ThingContext>(options =>
+                        options.UseSqlServer(ProdDbString));
+                    break;
+                default:
+                    break;
             }
-
-            if(EnvironmentIn.Equals("Production"))
-            {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration[ProdDbString]));
-            }
-
-
 
 
             services.AddIdentity<ApplicationUser,IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<IdentityContext>()
                 .AddDefaultTokenProviders();
 
             // Add application services.
             services.AddTransient<IEmailSender,EmailSender>();
 
             services.AddMvc();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
